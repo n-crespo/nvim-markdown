@@ -1,3 +1,5 @@
+# THIS IS (mostly) NOT MY WORK
+
 # Nvim Markdown
 
 Fork of [vim-markdown](https://github.com/plasticboy/vim-markdown) with extra functionality.

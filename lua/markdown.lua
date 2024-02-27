@@ -1,17 +1,17 @@
 local M = {}
 
 local regex = {
-    setex_line_header   = "^%-%-%-%-*",
+    setex_line_header = "^%-%-%-%-*",
     setex_equals_header = "^====*",
-    atx_header          = "^#",
-    unordered_list      = "^%s*[%*%-%+]",
-    ordered_list        = "^%s*%d+[%)%.]",
+    atx_header = "^#",
+    unordered_list = "^%s*[%*%-%+]",
+    ordered_list = "^%s*%d+[%)%.]",
 }
 
 -- to make M.backspace only trigger after a new line has been created
 local should_run_callback = false
 local function key_callback(key)
-    local backspace_term = vim.api.nvim_replace_termcodes("<BS>",true, true, true)
+    local backspace_term = vim.api.nvim_replace_termcodes("<BS>", true, true, true)
 
     -- It sends some key on o and O "<80><fd>h", which is some special key I didn't ask for.
     if should_run_callback and not (key:len() == 3 and key ~= backspace_term) then
@@ -40,24 +40,24 @@ local function find_header_or_list(line_num)
     local line = vim.fn.getline(line_num)
     local setex_line = vim.fn.getline(line_num + 1)
     if setex_line:match(regex.setex_equals_header) and not line:match("^$") then
-        return {line = line_num, type = "setex_equals_header"}
+        return { line = line_num, type = "setex_equals_header" }
     elseif setex_line:match(regex.setex_line_header) and not line:match("^$") then
-        return {line = line_num, type = "setex_line_header"}
+        return { line = line_num, type = "setex_line_header" }
     end
 
     while line_num > 0 and line_num <= line_count do
         local line = vim.fn.getline(line_num)
         for name, pattern in pairs(regex) do
             if line:match(pattern) then
-                if (name == "setex_equals_header" or name == "setex_line_header") then
-                    if vim.fn.getline(line_num-1):match("^$") then
+                if name == "setex_equals_header" or name == "setex_line_header" then
+                    if vim.fn.getline(line_num - 1):match("^$") then
                         -- Not actually a setex header without a title
                         break
                     end
                     line_num = line_num - 1
                 end
 
-                return {line = line_num, type = name}
+                return { line = line_num, type = name }
             end
         end
 
@@ -79,14 +79,13 @@ local function find_link_under_cursor()
         end
     until not link_start or (link_start <= column and link_stop >= column)
 
-
     if link_start then
-       return {
+        return {
             link = "[" .. text .. "](" .. url .. ")",
             start = link_start,
             stop = link_stop,
             text = text,
-            url = url
+            url = url,
         }
     else
         return nil
@@ -124,7 +123,6 @@ local function find_word_under_cursor()
     end
 end
 
-
 -- Given a the line of a bullet, returns a table of properties of the bullet.
 local function parse_bullet(bullet_line)
     local line = vim.fn.getline(bullet_line)
@@ -134,7 +132,8 @@ local function parse_bullet(bullet_line)
     bullet.indent, bullet.marker, bullet.trailing_indent, bullet.text = line:match("^(%s*)([%*%-%+])(%s+)(.*)")
     if not bullet.marker then
         -- Check ordered
-        bullet.indent, bullet.marker, bullet.delimiter, bullet.trailing_indent, bullet.text = line:match("^(%s*)(%d+)([%)%.])(%s+)(.*)")
+        bullet.indent, bullet.marker, bullet.delimiter, bullet.trailing_indent, bullet.text =
+            line:match("^(%s*)(%d+)([%)%.])(%s+)(.*)")
         bullet.type = "ordered_list"
     else
         bullet.delimiter = ""
@@ -250,7 +249,6 @@ end
 -- Pressing backspace in insert mode calls this function.
 -- Removes auto-inserted list markers
 function M.backspace()
-
     -- if beginning of line is list marker, delete it
     -- else normal backspace
     local cursor = vim.api.nvim_win_get_cursor(0)
@@ -279,9 +277,8 @@ function M.backspace()
     end
 
     vim.fn.setline(".", newline)
-    vim.api.nvim_win_set_cursor(0, {cursor[1], 10000})
+    vim.api.nvim_win_set_cursor(0, { cursor[1], 10000 })
 end
-
 
 -- Responsible for auto-inserting new bullet points
 local function newline(insert_line, folded)
@@ -299,8 +296,8 @@ local function newline(insert_line, folded)
         -- remove bullet and insert new line if the bullet is empty
         if #bullet_above.text == 0 then
             vim.cmd("startinsert")
-            vim.api.nvim_buf_set_lines(0, insert_line-1, insert_line, true, {"",""})
-            vim.api.nvim_win_set_cursor(0,{insert_line+1, 0})
+            vim.api.nvim_buf_set_lines(0, insert_line - 1, insert_line, true, { "", "" })
+            vim.api.nvim_win_set_cursor(0, { insert_line + 1, 0 })
             return
         end
 
@@ -336,17 +333,17 @@ local function newline(insert_line, folded)
         local new_line = indent .. marker .. delimiter .. trailing_indent .. checkbox
         vim.cmd("startinsert")
         vim.fn.append(insert_line, new_line)
-        vim.api.nvim_win_set_cursor(0,{insert_line+1, 1000000})
+        vim.api.nvim_win_set_cursor(0, { insert_line + 1, 1000000 })
         should_run_callback = true
     elseif folded then
         vim.cmd("startinsert")
         vim.fn.append(insert_line, "")
-        vim.api.nvim_win_set_cursor(0,{insert_line+1, 0})
+        vim.api.nvim_win_set_cursor(0, { insert_line + 1, 0 })
     else
         -- Insert line normally
         vim.cmd("startinsert")
         vim.fn.append(insert_line, "")
-        vim.api.nvim_win_set_cursor(0,{insert_line+1, 1000000})
+        vim.api.nvim_win_set_cursor(0, { insert_line + 1, 1000000 })
     end
 end
 
@@ -410,8 +407,8 @@ function M.jump()
         local line = string.rep(" ", bullet.indent + vim.o.shiftwidth)
         local checkbox = bullet.checkbox and "[ ] " or ""
         line = line .. bullet.marker .. bullet.delimiter .. string.rep(" ", bullet.trailing_indent) .. checkbox
-        vim.api.nvim_buf_set_lines(0, cursor[1] - 1, cursor[1], true, {line})
-        vim.api.nvim_win_set_cursor(0,{cursor[1], 1000000})
+        vim.api.nvim_buf_set_lines(0, cursor[1] - 1, cursor[1], true, { line })
+        vim.api.nvim_win_set_cursor(0, { cursor[1], 1000000 })
     elseif link and cursor[2] >= link.start and cursor[2] <= link.stop then
         --error(vim.inspect({cursor,link}))
         local relative_position = cursor[2] - link.start + 1
@@ -420,11 +417,11 @@ function M.jump()
         --error(vim.inspect({end_bracket, relative_position}))
         if end_bracket and relative_position > end_bracket then
             -- Switch to empty brackets from parentheses
-            vim.api.nvim_win_set_cursor(0, {cursor[1], link.start})
+            vim.api.nvim_win_set_cursor(0, { cursor[1], link.start })
         elseif start_parenthesis and relative_position < start_parenthesis then
             --error(vim.inspect(link))
             -- Switch to empty parentheses from brackets
-            vim.api.nvim_win_set_cursor(0, {cursor[1], link.stop-1})
+            vim.api.nvim_win_set_cursor(0, { cursor[1], link.stop - 1 })
         else
             -- go to end
             --if link_stop == #line then
@@ -432,20 +429,20 @@ function M.jump()
             --    vim.cmd("startinsert!")
             --    vim.api.nvim_feedkeys(" ", "n", true)
             --else
-                vim.api.nvim_win_set_cursor(0, {cursor[1], link.stop})
+            vim.api.nvim_win_set_cursor(0, { cursor[1], link.stop })
             --end
         end
     else
         -- normal tab
         local key = vim.api.nvim_replace_termcodes("<TAB>", true, false, true)
-        vim.api.nvim_feedkeys(key, 'n', true)
+        vim.api.nvim_feedkeys(key, "n", true)
     end
 end
 
 -- Pressing tab in normal mode calls this function
 -- Folds by bullets if cursor at one, else folds by headers
 function M.fold()
-    local line_num = vim.fn.line('.')
+    local line_num = vim.fn.line(".")
 
     -- Fold is closed, delete it and return
     if vim.fn.foldclosed(line_num) > 0 then
@@ -485,7 +482,7 @@ function M.fold()
             -- if fold_start is still nil, it's a bullet that can't be folded
             if fold_start then
                 vim.cmd("silent! norm zd") -- delete any remnant folds
-                vim.cmd(string.format("%d,%dfold",fold_start, fold_stop))
+                vim.cmd(string.format("%d,%dfold", fold_start, fold_stop))
                 break
             end
         elseif section.type:match("header") then
@@ -510,7 +507,7 @@ function M.follow_link()
             vim.call("netrw#BrowseX", link.url, 0)
         elseif link.url:match("^#") then
             -- an anchor
-            vim.fn.search("^#* "..link.url:sub(2))
+            vim.fn.search("^#* " .. link.url:sub(2))
         else
             -- a file
             vim.cmd("e " .. link.url)
@@ -519,14 +516,13 @@ function M.follow_link()
         if word.text:match("^https?://") then
             -- Bare url i.e without link syntax
             vim.call("netrw#BrowseX", word.text, 0)
-        else
-            -- create a link
-            local filename = string.lower(word.text:gsub("%s","_") .. ".md")
-            vim.cmd('norm! "_ciW[' .. word.text .. '](' .. filename ..')')
+            -- else
+            --     -- create a link
+            --     local filename = string.lower(word.text:gsub("%s","_") .. ".md")
+            --     vim.cmd('norm! "_ciW[' .. word.text .. '](' .. filename ..')')
         end
     end
 end
-
 
 -- Takes the word under the cursor and puts it in the appropriate spot in a link.
 -- If no word is under the cursor, insert the link syntax
@@ -540,17 +536,17 @@ function M.create_link()
         local word = find_word_under_cursor()
         if word and (word.text:match("/") or vim.fn.filereadable(word.text) == 1) then
             -- convert an url to a link
-            new_line = line:sub(1,word.start-1) .. "[]"
+            new_line = line:sub(1, word.start - 1) .. "[]"
             new_cursor_pos = #new_line
-            new_line = new_line .. "(" .. word.text .. ")" .. line:sub(word.stop+1)
+            new_line = new_line .. "(" .. word.text .. ")" .. line:sub(word.stop + 1)
         elseif word then
             -- convert word to a link
-            new_line = line:sub(1,word.start-1) .. "[" .. word.text .. "]()"
+            new_line = line:sub(1, word.start - 1) .. "[" .. word.text .. "]()"
             new_cursor_pos = #new_line
-            new_line = new_line .. line:sub(word.stop+1)
+            new_line = new_line .. line:sub(word.stop + 1)
         else
             -- just insert link syntax
-            new_line = line:sub(1,cursor[2]) .. "[]"
+            new_line = line:sub(1, cursor[2]) .. "[]"
             new_cursor_pos = #new_line
             new_line = new_line .. "()" .. line:sub(cursor[2] + 1)
         end
@@ -570,20 +566,20 @@ function M.create_link()
 
         local selection = line:sub(start, stop)
         if selection:match("/") or vim.fn.filereadable(selection) == 1 then
-            new_line = line:sub(1,start-1) .. "[]"
+            new_line = line:sub(1, start - 1) .. "[]"
             new_cursor_pos = #new_line
-            new_line = new_line .. "(" .. selection .. ")" .. line:sub(stop+1)
+            new_line = new_line .. "(" .. selection .. ")" .. line:sub(stop + 1)
         else
-            new_line = line:sub(1,start-1) .. "[" .. selection .. "]()"
+            new_line = line:sub(1, start - 1) .. "[" .. selection .. "]()"
             new_cursor_pos = #new_line
-            new_line = new_line .. line:sub(stop+1)
+            new_line = new_line .. line:sub(stop + 1)
         end
     else
         return
     end
 
     vim.fn.setline(".", new_line)
-    vim.fn.setpos(".", {0, cursor[1], new_cursor_pos, 0})
+    vim.fn.setpos(".", { 0, cursor[1], new_cursor_pos, 0 })
     vim.cmd("startinsert")
 end
 
@@ -647,28 +643,27 @@ function M.toggle_checkbox()
         if #bullet.text == 0 then
             -- if there is no text the user probably wants to remove the checkbox
             -- since it's not returning here, it will hit the if below, and get replaced again
-            line = line:gsub("%[%s%]","[x]")
+            line = line:gsub("%[%s%]", "[x]")
             bullet.checkbox.checked = true
         else
             -- else fill it
-            line = line:gsub("%[%s]","[x]")
-            vim.api.nvim_buf_set_lines(0, cursor[1]-1, cursor[1], 1, {line})
+            line = line:gsub("%[%s]", "[x]")
+            vim.api.nvim_buf_set_lines(0, cursor[1] - 1, cursor[1], 1, { line })
             return
         end
-
     end
 
     -- Return to normal list item
     if bullet.checkbox and bullet.checkbox.checked then
-        line = line:gsub("%s%[x%]","")
-        vim.api.nvim_buf_set_lines(0, cursor[1]-1, cursor[1], 1, {line})
+        line = line:gsub("%s%[x%]", "")
+        vim.api.nvim_buf_set_lines(0, cursor[1] - 1, cursor[1], 1, { line })
 
         -- If the cursor was in the bullet text, move it backwards
         local checkbox = bullet.checkbox and 4 or 0
         local text_start = bullet.indent + #bullet.marker + #bullet.delimiter + checkbox
         if cursor[2] + 1 > text_start then
             -- removing before cursor should move the cursor too
-            vim.api.nvim_win_set_cursor(0, {cursor[1],cursor[2] - 4})
+            vim.api.nvim_win_set_cursor(0, { cursor[1], cursor[2] - 4 })
         end
         return
     end
@@ -680,16 +675,21 @@ function M.toggle_checkbox()
             trailing_indent = " "
         end
 
-        line = string.rep(" ", bullet.indent) .. bullet.marker .. bullet.delimiter .. " [ ]" .. trailing_indent .. bullet.text
-        vim.api.nvim_buf_set_lines(0, cursor[1]-1, cursor[1], 1, {line})
+        line = string.rep(" ", bullet.indent)
+            .. bullet.marker
+            .. bullet.delimiter
+            .. " [ ]"
+            .. trailing_indent
+            .. bullet.text
+        vim.api.nvim_buf_set_lines(0, cursor[1] - 1, cursor[1], 1, { line })
 
         -- if the cursor was in the bullet text, move it forwards
         local text_start = bullet.indent + #bullet.marker + #bullet.delimiter
         if cursor[2] + 1 == text_start + 1 then
             -- when in insert mode and you press C-c without indenting
-            vim.api.nvim_win_set_cursor(0, {cursor[1],cursor[2] + 5})
+            vim.api.nvim_win_set_cursor(0, { cursor[1], cursor[2] + 5 })
         elseif cursor[2] + 1 > text_start then
-            vim.api.nvim_win_set_cursor(0, {cursor[1],cursor[2] + 4})
+            vim.api.nvim_win_set_cursor(0, { cursor[1], cursor[2] + 4 })
         end
         return
     end
