@@ -1,8 +1,9 @@
-# THIS IS (mostly) NOT MY WORK
-
 # Nvim Markdown
 
-Fork of a fork of [vim-markdown](https://github.com/plasticboy/vim-markdown) with extra functionality.
+> [!NOTE]
+> This is a fork of [this](https://github.com/ixru/nvim-markdown), which is a
+> fork of [vim-markdown](https://github.com/plasticboy/vim-markdown) with extra
+> functionality.
 
 Notable changes:
 - `<CR>` doesn't create links in normal mode
@@ -12,11 +13,25 @@ Notable changes:
 
 This plugin requires Neovim 0.5+
 
-Use a package manager like [vim-plug](https://github.com/junegunn/vim-plug) to install it.
+Plugin installation with lazy: 
 
-To install with vim-plug add: `Plug 'ixru/nvim-markdown'`
-
-To install manually instead, see `:help plugin`
+```lua
+-- Use <enter> to follow markdown links (or hyperlinks), <C-k> in insert mode
+-- to create links, <zh> to fold headers. 
+return {
+  "n-crespo/nvim-markdown",
+  ft = "markdown",
+  keys = {
+    { "<leader>t", "<cmd>Toc<cr><cmd>set nornu<cr><cmd>set nonu<cr>", desc = "Table of Contents" },
+  },
+  config = function()
+    vim.cmd([[let g:vim_markdown_math = 1]])
+    vim.g.vim_markdown_toc_autofit = 1
+    vim.cmd([[map zh <Plug>Markdown_Fold]])
+    vim.cmd([[map <Plug> <Plug>Markdown_CreateLink]])
+  end,
+}
+```
 
 ## Features
 
