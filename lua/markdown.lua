@@ -526,104 +526,104 @@ end
 
 -- Takes the word under the cursor and puts it in the appropriate spot in a link.
 -- If no word is under the cursor, insert the link syntax
--- function M.create_link()
---     local line = vim.fn.getline(".")
---     local cursor = vim.api.nvim_win_get_cursor(0)
---     local mode = vim.fn.mode(".")
+function M.create_link()
+    local line = vim.fn.getline(".")
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local mode = vim.fn.mode(".")
 
---     local new_line, new_cursor_pos
---     if mode == "i" or mode == "ic" or mode == "n" then
---         local word = find_word_under_cursor()
---         if word and (word.text:match("/") or vim.fn.filereadable(word.text) == 1) then
---             -- convert an url to a link
---             new_line = line:sub(1, word.start - 1) .. "[]"
---             new_cursor_pos = #new_line
---             new_line = new_line .. "(" .. word.text .. ")" .. line:sub(word.stop + 1)
---         elseif word then
---             -- convert word to a link
---             new_line = line:sub(1, word.start - 1) .. "[" .. word.text .. "]()"
---             new_cursor_pos = #new_line
---             new_line = new_line .. line:sub(word.stop + 1)
---         else
---             -- just insert link syntax
---             new_line = line:sub(1, cursor[2]) .. "[]"
---             new_cursor_pos = #new_line
---             new_line = new_line .. "()" .. line:sub(cursor[2] + 1)
---         end
---     elseif mode == "v" or mode == "\22" then
---         -- \22 is visual block mode on mine, might be wrong for others.
---         vim.cmd(":normal! ") -- Need to return to normal mode to set the below marks
---         local start = vim.fn.getpos("'<")
---         local stop = vim.fn.getpos("'>")
+    local new_line, new_cursor_pos
+    if mode == "i" or mode == "ic" or mode == "n" then
+        local word = find_word_under_cursor()
+        if word and (word.text:match("/") or vim.fn.filereadable(word.text) == 1) then
+            -- convert an url to a link
+            new_line = line:sub(1, word.start - 1) .. "[]"
+            new_cursor_pos = #new_line
+            new_line = new_line .. "(" .. word.text .. ")" .. line:sub(word.stop + 1)
+        elseif word then
+            -- convert word to a link
+            new_line = line:sub(1, word.start - 1) .. "[" .. word.text .. "]()"
+            new_cursor_pos = #new_line
+            new_line = new_line .. line:sub(word.stop + 1)
+        else
+            -- just insert link syntax
+            new_line = line:sub(1, cursor[2]) .. "[]"
+            new_cursor_pos = #new_line
+            new_line = new_line .. "()" .. line:sub(cursor[2] + 1)
+        end
+    elseif mode == "v" or mode == "\22" then
+        -- \22 is visual block mode on mine, might be wrong for others.
+        vim.cmd(":normal! ") -- Need to return to normal mode to set the below marks
+        local start = vim.fn.getpos("'<")
+        local stop = vim.fn.getpos("'>")
 
---         -- Don't do anything if the visual selection spans multiple lines
---         if start[2] ~= stop[2] then
---             return
---         else
---             start = start[3]
---             stop = stop[3]
---         end
+        -- Don't do anything if the visual selection spans multiple lines
+        if start[2] ~= stop[2] then
+            return
+        else
+            start = start[3]
+            stop = stop[3]
+        end
 
---         local selection = line:sub(start, stop)
---         if selection:match("/") or vim.fn.filereadable(selection) == 1 then
---             new_line = line:sub(1, start - 1) .. "[]"
---             new_cursor_pos = #new_line
---             new_line = new_line .. "(" .. selection .. ")" .. line:sub(stop + 1)
---         else
---             new_line = line:sub(1, start - 1) .. "[" .. selection .. "]()"
---             new_cursor_pos = #new_line
---             new_line = new_line .. line:sub(stop + 1)
---         end
---     else
---         return
---     end
+        local selection = line:sub(start, stop)
+        if selection:match("/") or vim.fn.filereadable(selection) == 1 then
+            new_line = line:sub(1, start - 1) .. "[]"
+            new_cursor_pos = #new_line
+            new_line = new_line .. "(" .. selection .. ")" .. line:sub(stop + 1)
+        else
+            new_line = line:sub(1, start - 1) .. "[" .. selection .. "]()"
+            new_cursor_pos = #new_line
+            new_line = new_line .. line:sub(stop + 1)
+        end
+    else
+        return
+    end
 
---     vim.fn.setline(".", new_line)
---     vim.fn.setpos(".", { 0, cursor[1], new_cursor_pos, 0 })
---     vim.cmd("startinsert")
--- end
+    vim.fn.setline(".", new_line)
+    vim.fn.setpos(".", { 0, cursor[1], new_cursor_pos, 0 })
+    vim.cmd("startinsert")
+end
 
 -- Given the line number of one of the bullets in a list,
 -- returns a table with the position of all the siblings in the list
---function renumber_ordered_list(line_num)
---    local list = {}
---    local list_indent = vim.fn.indent(line_num)
---
---    -- iterate up
---    local iter = line_num - 1
---    while true do
---        local line = vim.fn.getline(iter)
---        local indent = vim.fn.indent(iter)
---        if indent == list_indent and (line:match(regex.ordered_list) or line:match(regex.unordered_list)) then
---            -- Found bullet
---            list:insert(1, iter)
---        elseif indent < list_indent then
---            -- Top of list
---            break
---        end
---        iter = iter -1
---    end
---
---    -- insert line_num bullet
---    list:insert(line_num)
---
---    -- iterate down
---    local iter = line_num + 1
---    while true do
---        local line = vim.fn.getline(iter)
---        local indent = vim.fn.indent(iter)
---        if indent == list_indent and (line:match(regex.ordered_list) or line:match(regex.unordered_list)) then
---            -- Found bullet
---            list:insert(iter)
---        elseif indent < list_indent then
---            -- Top of list
---            break
---        end
---        iter = iter -1
---    end
---
---    return list
---end
+function renumber_ordered_list(line_num)
+    local list = {}
+    local list_indent = vim.fn.indent(line_num)
+
+    -- iterate up
+    local iter = line_num - 1
+    while true do
+        local line = vim.fn.getline(iter)
+        local indent = vim.fn.indent(iter)
+        if indent == list_indent and (line:match(regex.ordered_list) or line:match(regex.unordered_list)) then
+            -- Found bullet
+            list:insert(1, iter)
+        elseif indent < list_indent then
+            -- Top of list
+            break
+        end
+        iter = iter - 1
+    end
+
+    -- insert line_num bullet
+    list:insert(line_num)
+
+    -- iterate down
+    local iter = line_num + 1
+    while true do
+        local line = vim.fn.getline(iter)
+        local indent = vim.fn.indent(iter)
+        if indent == list_indent and (line:match(regex.ordered_list) or line:match(regex.unordered_list)) then
+            -- Found bullet
+            list:insert(iter)
+        elseif indent < list_indent then
+            -- Top of list
+            break
+        end
+        iter = iter - 1
+    end
+
+    return list
+end
 
 -- Pressing C-c calls this function
 -- Iterates through todo list for all list types
@@ -695,31 +695,30 @@ function M.toggle_checkbox()
     end
 end
 
---function M.visual_convert_to_link()
---    local cursor = vim.api.nvim_win_get_cursor()
---    local start = vim.api.nvim_buf_get_mark("<")
---    local stop = vim.api.nvim_buf_get_mark(">")
---    local line = vim.api.nvim_get_current_line()
---    local segment = line:sub(start, stop)
---    local before = line:sub(0,stop)
---    local after = line:sub(stop)
---
---    if segment:match("%.*?%/*?") then
---        -- Is probably url
---        local newline = before .. "[](" .. segment .. ")" .. after
---    elseif #segment > 0 then
---        local newline = before .. "[" .. segment .. "]()" .. after
---    else
---        cursor[2] = cursor[2] + 1
---        local newline = before .. "[]()"
---    end
---end
+function M.visual_convert_to_link()
+    local cursor = vim.api.nvim_win_get_cursor()
+    local start = vim.api.nvim_buf_get_mark("<")
+    local stop = vim.api.nvim_buf_get_mark(">")
+    local line = vim.api.nvim_get_current_line()
+    local segment = line:sub(start, stop)
+    local before = line:sub(0, stop)
+    local after = line:sub(stop)
 
---function insert_convert_to_link()
---    local cursor = vim.api.nvim_win_get_cursor(0)
---    local line =
---    vim.cmd("norm hviW")
---    M.visual_convert_to_link()
---end
+    if segment:match("%.*?%/*?") then
+        -- Is probably url
+        local newline = before .. "[](" .. segment .. ")" .. after
+    elseif #segment > 0 then
+        local newline = before .. "[" .. segment .. "]()" .. after
+    else
+        cursor[2] = cursor[2] + 1
+        local newline = before .. "[]()"
+    end
+end
+
+function insert_convert_to_link()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local line = vim.cmd("norm hviW")
+    M.visual_convert_to_link()
+end
 
 return M
