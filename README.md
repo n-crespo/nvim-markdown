@@ -2,7 +2,11 @@
 
 # Nvim Markdown
 
-Fork of [vim-markdown](https://github.com/plasticboy/vim-markdown) with extra functionality.
+Fork of a fork of [vim-markdown](https://github.com/plasticboy/vim-markdown) with extra functionality.
+
+Notable changes:
+- `<CR>` doesn't create links in normal mode
+- that's it.
 
 ## Installation
 
