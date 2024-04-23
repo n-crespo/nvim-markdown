@@ -6,6 +6,7 @@
 > functionality.
 
 Notable changes:
+
 - `<CR>` doesn't create links in normal mode
 - that's it.
 
@@ -13,11 +14,11 @@ Notable changes:
 
 This plugin requires Neovim 0.5+
 
-Plugin installation with lazy: 
+Plugin installation with lazy:
 
 ```lua
 -- Use <enter> to follow markdown links (or hyperlinks), <C-k> in insert mode
--- to create links, <zh> to fold headers. 
+-- to create links, <zh> to fold headers.
 return {
   "n-crespo/nvim-markdown",
   ft = "markdown",
@@ -35,16 +36,17 @@ return {
 
 ## Features
 
-* Syntax highlighting with optional concealment of links and text formatting.
-* Fold headers and lists by pressing `tab` in normal mode, they persist between sessions.
-* Insert checkboxes `[X]` in lists by pressing `Control-c` in normal mode.
-* Auto-inserts bullets on newline; can be removed again with `backspace` while preserving indentation, or `tab` to create a sub-list.
-* Create links `[link text](url)` by pressing `Control-k` in insert or visual mode. If pressed in an url, or in a word, it will autofill the correct field.
- `tab` can be used in insert mode to skip from one field to the next.
-* Follow links with `Return`
-* `Return` will create a link to a markdown file, if pressed over a word.
+- Syntax highlighting with optional concealment of links and text formatting.
+- Fold headers and lists by pressing `tab` in normal mode, they persist between sessions.
+- Insert checkboxes `[X]` in lists by pressing `Control-c` in normal mode.
+- Auto-inserts bullets on newline; can be removed again with `backspace` while preserving indentation, or `tab` to create a sub-list.
+- Create links `[link text](url)` by pressing `Control-k` in insert or visual mode. If pressed in an url, or in a word, it will autofill the correct field.
+  `tab` can be used in insert mode to skip from one field to the next.
+- Follow links with `Return`
+- `Return` will create a link to a markdown file, if pressed over a word.
 
 ## Options
+
 <details><summary>Syntax Concealing</summary>
 
 Concealing is set for some syntax.
@@ -52,7 +54,7 @@ Concealing is set for some syntax.
 For example, conceal `[link text](link url)` as just `link text`.
 Also, `_italic_` and `*italic*` will conceal to just _italic_.
 Similarly `__bold__`, `**bold**`, `___italic bold___`, and `***italic bold***`
-will conceal to just __bold__, **bold**, ___italic bold___, and ***italic bold*** respectively.
+will conceal to just **bold**, **bold**, **_italic bold_**, and **_italic bold_** respectively.
 
 To change what is concealed use one of these in your vimrc:
 
@@ -73,17 +75,18 @@ Allow for the TOC window to auto-fit when it's possible for it to shrink.
 It never increases its default size (half screen), it only shrinks.
 
         let g:vim_markdown_toc_autofit = 1
-</details>
 
+</details>
 
 <details><summary>Text emphasis restriction to single-lines</summary>
 
 By default text emphasis works across multiple lines until a closing token is found. However, it's possible to restrict text emphasis to a single line (i.e., for it to be applied a closing token must be found on the same line). To do so:
 
         let g:vim_markdown_emphasis_multiline = 0
+
 </details>
 
-<details><summary>Fenced code block languages</summary> 
+<details><summary>Fenced code block languages</summary>
 
 You can use filetype name as fenced code block languages for syntax highlighting.
 If you want to use different name from filetype, you can add it in your `.vimrc` like so:
@@ -97,6 +100,7 @@ This will cause the following to be highlighted using the `cs` filetype syntax.
     ```
 
 Default is `['c++=cpp', 'viml=vim', 'bash=sh', 'ini=dosini']`.
+
 </details>
 
 ### Syntax extensions
@@ -108,6 +112,7 @@ The following options control which syntax extensions will be turned on. They ar
 Used as `$x^2$`, `$$x^2$$`, escapable as `\$x\$` and `\$\$x\$\$`.
 
     let g:vim_markdown_math = 1
+
 </details>
 
 <details><summary>YAML Front Matter</summary>
@@ -115,6 +120,7 @@ Used as `$x^2$`, `$$x^2$$`, escapable as `\$x\$` and `\$\$x\$\$`.
 Highlight YAML front matter as used by Jekyll or [Hugo](https://gohugo.io/content/front-matter/).
 
     let g:vim_markdown_frontmatter = 1
+
 </details>
 
 <details><summary>TOML Front Matter</summary>
@@ -124,6 +130,7 @@ Highlight TOML front matter as used by [Hugo](https://gohugo.io/content/front-ma
 TOML syntax highlight requires [vim-toml](https://github.com/cespare/vim-toml).
 
     let g:vim_markdown_toml_frontmatter = 1
+
 </details>
 
 <details><summary>JSON Front Matter</summary>
@@ -133,28 +140,34 @@ Highlight JSON front matter as used by [Hugo](https://gohugo.io/content/front-ma
 JSON syntax highlight requires [vim-json](https://github.com/elzr/vim-json).
 
     let g:vim_markdown_json_frontmatter = 1
+
 </details>
 
 ## Mappings
 
 #### Normal mode
-   - `]]`: Go to next header. `<Plug>Markdown_MoveToNextHeader`
-   - `[[`: Go to previous header. Contrast with `]c`. `<Plug>Markdown_MoveToPreviousHeader`
-   - `][`: Go to next sibling header if any. `<Plug>Markdown_MoveToNextSiblingHeader`
-   - `[]`: Go to previous sibling header if any. `<Plug>Markdown_MoveToPreviousSiblingHeader`
-   - `]c`: Go to Current header. `<Plug>Markdown_MoveToCurHeader`
-   - `]u`: Go to parent header (Up). `<Plug>Markdown_MoveToParentHeader`
-   - `Ctrl-c`: Toggle checkboxes. `<Plug>Markdown_Checkbox`
-   - `Tab`: Fold headers/lists. `<Plug>Markdown_Fold`
-   - `Return`: Follow links. `<Plug>Markdown_FollowLink`
+
+- `]]`: Go to next header. `<Plug>Markdown_MoveToNextHeader`
+- `[[`: Go to previous header. Contrast with `]c`. `<Plug>Markdown_MoveToPreviousHeader`
+- `][`: Go to next sibling header if any. `<Plug>Markdown_MoveToNextSiblingHeader`
+- `[]`: Go to previous sibling header if any. `<Plug>Markdown_MoveToPreviousSiblingHeader`
+- `]c`: Go to Current header. `<Plug>Markdown_MoveToCurHeader`
+- `]u`: Go to parent header (Up). `<Plug>Markdown_MoveToParentHeader`
+- `Ctrl-c`: Toggle checkboxes. `<Plug>Markdown_Checkbox`
+- `Tab`: Fold headers/lists. `<Plug>Markdown_Fold`
+- `Return`: Follow links. `<Plug>Markdown_FollowLink`
+
 #### Insert mode
-   - `Tab`: Indent new bullets, jump through empty fields in links. `<Plug>Markdown_Jump`
-   - `Ctrl-k`: Create new links. `<Plug>Markdown_CreateLink`
-   - `O`: New line above, overrides default. `<Plug>Markdown_NewLineAbove`
-   - `o`: New line below, overrides default. `<Plug>Markdown_NewLineBelow`
-   - `Return`: New line below, overrides default. `<Plug>Markdown_NewLineBelow`
+
+- `Tab`: Indent new bullets, jump through empty fields in links. `<Plug>Markdown_Jump`
+- `Ctrl-k`: Create new links. `<Plug>Markdown_CreateLink`
+- `O`: New line above, overrides default. `<Plug>Markdown_NewLineAbove`
+- `o`: New line below, overrides default. `<Plug>Markdown_NewLineBelow`
+- `Return`: New line below, overrides default. `<Plug>Markdown_NewLineBelow`
+
 #### Visual mode
-   - `Ctrl-k`: Create new links. `<Plug>Markdown_CreateLink`
+
+- `Ctrl-k`: Create new links. `<Plug>Markdown_CreateLink`
 
 This plugin follows the recommended Vim plugin mapping interface, so to change the map `]u` to `asdf`, add to your `.vimrc`:
 
@@ -173,14 +186,16 @@ To disable all mappings use:
 The following requires `:filetype plugin on`.
 
 - `:HeaderDecrease`: Decrease level of all headers in buffer: `h2` to `h1`, `h3` to `h2`, etc.
- 
+
   If range is given, only operate in the range.
   If an `h1` would be decreased, abort.
   For simplicity of implementation, Setex headers are converted to Atx.
+
 - `:HeaderIncrease`: Analogous to `:HeaderDecrease`, but increase levels instead.
 - `:SetexToAtx`: Convert all Setex style headers in buffer to Atx.
- 
-  If a range is given, e.g. hit `:` from visual mode, only operate on the range. 
+
+  If a range is given, e.g. hit `:` from visual mode, only operate on the range.
+
 - `:Toc`: create a quickfix vertical window navigable table of contents with the headers.
   Hit `<Enter>` on a line to jump to the corresponding line of the markdown file.
 - `:Toch`: Same as `:Toc` but in a horizontal window.
@@ -189,7 +204,7 @@ The following requires `:filetype plugin on`.
 
   An optional argument can be used to specify how many levels of headers to display in the table of content, e.g., to display up to and including `h3`, use `:InsertToc 3`.
 
--   `:InsertNToc`: Same as `:InsertToc`, but the format of `h2` headers in the table of contents is a numbered list, rather than a bulleted list.
+- `:InsertNToc`: Same as `:InsertToc`, but the format of `h2` headers in the table of contents is a numbered list, rather than a bulleted list.
 
 ## Credits
 
