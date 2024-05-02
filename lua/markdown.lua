@@ -510,6 +510,7 @@ function M.follow_link()
             vim.fn.search("^#* " .. link.url:sub(2))
         else
             -- a file
+            vim.cmd("cd %:h")
             vim.cmd("e " .. link.url)
         end
     elseif word then
