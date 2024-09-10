@@ -732,7 +732,7 @@ endfunction
 
 augroup Mkd
     autocmd! * <buffer>
-    autocmd BufWinLeave <buffer> mkview!
+    autocmd BufWinLeave <buffer> silent! mkview!
     autocmd BufWinEnter <buffer> silent! loadview
     autocmd BufWinEnter <buffer> call s:MarkdownRefreshSyntax(1)
     " workaround, even without options in viewoptions it still saves this
