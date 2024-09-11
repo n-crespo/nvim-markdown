@@ -1,11 +1,10 @@
 # Nvim Markdown
 
 > [!NOTE]
-> This is a fork of [this](https://github.com/ixru/nvim-markdown), which is a
-> fork of [vim-markdown](https://github.com/plasticboy/vim-markdown) with extra
+> This is a fork of [this](https://github.com/ixru/nvim-markdown), which is a fork of [vim-markdown](https://github.com/plasticboy/vim-markdown) with extra
 > functionality.
 
-Notable changes:
+## Notable changes:
 
 - `<CR>` doesn't create links in normal mode
 - that's it.
