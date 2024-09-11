@@ -510,9 +510,9 @@ function M.follow_link()
             vim.fn.search("^#* " .. link.url:sub(2))
         else
             -- a file
-            vim.cmd("cd %:h")
+            vim.cmd("lcd %:h")
             vim.cmd("e " .. link.url)
-            vim.cmd("cd-") -- NOTE: This works in fish, may not be supported by other shells (return to previous directory)
+            vim.cmd("lcd -") -- Return to the previous directory in Vim (portable across shells)
         end
     elseif word then
         if word.text:match("^https?://") then
