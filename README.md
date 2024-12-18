@@ -62,7 +62,7 @@ By default text emphasis works across multiple lines until a closing token is fo
         let g:vim_markdown_emphasis_multiline = 0
 </details>
 
-<details><summary>Fenced code block languages</summary> 
+<details><summary>Fenced code block languages</summary>
 
 You can use filetype name as fenced code block languages for syntax highlighting.
 If you want to use different name from filetype, you can add it in your `.vimrc` like so:
@@ -152,14 +152,14 @@ To disable all mappings use:
 The following requires `:filetype plugin on`.
 
 - `:HeaderDecrease`: Decrease level of all headers in buffer: `h2` to `h1`, `h3` to `h2`, etc.
- 
+
   If range is given, only operate in the range.
   If an `h1` would be decreased, abort.
   For simplicity of implementation, Setex headers are converted to Atx.
 - `:HeaderIncrease`: Analogous to `:HeaderDecrease`, but increase levels instead.
 - `:SetexToAtx`: Convert all Setex style headers in buffer to Atx.
- 
-  If a range is given, e.g. hit `:` from visual mode, only operate on the range. 
+
+  If a range is given, e.g. hit `:` from visual mode, only operate on the range.
 - `:Toc`: create a quickfix vertical window navigable table of contents with the headers.
   Hit `<Enter>` on a line to jump to the corresponding line of the markdown file.
 - `:Toch`: Same as `:Toc` but in a horizontal window.
