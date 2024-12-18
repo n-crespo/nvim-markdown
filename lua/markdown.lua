@@ -512,8 +512,13 @@ function M.follow_link()
             -- an anchor
             vim.fn.search("^#* "..link.url:sub(2))
         else
-            -- a file
-            vim.cmd("e " .. link.url)
+            if string.find(link.url, '~') then
+                -- an absolute path
+                vim.cmd("e " .. link.url)
+            else
+                -- a relative path
+                vim.cmd("e " .. vim.fn.expand('%:p:h') .. '/' .. link.url)
+            end
         end
     elseif word then
         if word.text:match("^https?://") then
