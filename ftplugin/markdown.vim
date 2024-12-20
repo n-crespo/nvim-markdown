@@ -420,6 +420,9 @@ function! s:InsertToc(format, ...)
         return
     endif
 
+    " Dictionary to track header counts for uniqueness
+    let l:header_counts = {}
+
     if a:format ==# 'numbers'
         let l:h2_count = 0
         for header in l:header_list
@@ -456,8 +459,21 @@ function! s:InsertToc(format, ...)
             let l:indent = repeat(' ', l:max_h2_number_len + 2 * (l:level - 2))
             let l:marker = '* '
         endif
-        let l:text = '[' . header.text . ']'
-        let l:link = '(#' . substitute(tolower(header.text), '\v[ ]+', '-', 'g') . ')'
+
+        " Generate unique header text
+        let l:original_text = header.text
+        if has_key(l:header_counts, l:original_text)
+            let l:header_counts[l:original_text] += 1
+        else
+            let l:header_counts[l:original_text] = 1
+        endif
+        let l:unique_text = l:original_text
+        if l:header_counts[l:original_text] > 1
+            let l:unique_text .= '-' . l:header_counts[l:original_text]
+        endif
+
+        let l:text = '[' . l:unique_text . ']'
+        let l:link = '(#' . substitute(tolower(l:unique_text), '\v[ ]+', '-', 'g') . ')'
         let l:line = l:indent . l:marker . l:text . l:link
         let l:toc = l:toc + [l:line]
     endfor
