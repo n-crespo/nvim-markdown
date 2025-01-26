@@ -767,7 +767,8 @@ function! Foldtext_markdown()
 endfunction
 
 setlocal comments=b:> " blockquote
-setlocal formatoptions+=r " auto-insert > on newline
+setlocal formatoptions+=tcqlnr
+setlocal formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\|^\\s*[-*+]\\s\\+\\\|^\\[^\\ze[^\\]]\\+\\]:\\&^.\\{4\\}
 let &l:conceallevel = exists('g:vim_markdown_conceal') ? g:vim_markdown_conceal : 2
 setlocal viewoptions=folds,cursor
 setlocal foldtext=Foldtext_markdown()
