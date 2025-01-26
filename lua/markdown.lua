@@ -510,7 +510,7 @@ function M.follow_link()
             vim.call("netrw#BrowseX", link.url, 0)
         elseif link.url:match("^#") then
             -- an anchor
-            vim.fn.search("^#* "..link.url:sub(2))
+            vim.fn.search("^#* "..link.url:sub(2):gsub("-", "[%- ]"))
         else
             -- a file path
 
