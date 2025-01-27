@@ -508,13 +508,10 @@ function M.follow_link()
         if link.url:match("^https?://") then
             -- a link
             vim.call("netrw#BrowseX", link.url, 0)
-        elseif link.url:match("^#") then
-            -- an anchor
-            vim.fn.search("^#* "..link.url:sub(2):gsub("-", "[%- ]"))
         else
-            -- a file path
+            -- a file path/anchor
 
-            -- check if path contains a line number (ex. file.md#L10)
+            -- check if path contains a line number e.g. file.md#L10
             local line_number = link.url:match("#L(%d+)$") or ""
             if line_number ~= "" then
                 -- remove line number info if it exists
@@ -522,20 +519,33 @@ function M.follow_link()
                 link.url = link.url:gsub("#L%d+$", "")
             end
 
-            -- try to follow path
-            local ok, _ = pcall(function ()
-                if string.match(link.url, "^[~/]") then
-                    -- an absolute path
-                    vim.cmd("e " .. line_number .. link.url)
-                else
-                    -- a relative path
-                    vim.cmd("e " .. line_number .. vim.fn.expand('%:p:h') .. '/' .. link.url)
-                end
-            end)
-
-            if not ok then
-                vim.notify("Invalid link: " .. link.url, vim.log.levels.ERROR)
+            -- check if path contains an anchor e.g. file.md#my-header or just #my-header
+            local anchor = link.url:match("#(.+)$") or ""
+            if anchor ~= "" then
+                link.url = link.url:gsub("#.+$", "")
             end
+
+            if link.url ~= "" then
+                -- try to follow path
+                local ok, _ = pcall(function ()
+                    if string.match(link.url, "^[~/]") then
+                        -- an absolute path
+                        vim.cmd("e " .. line_number .. link.url)
+                    else
+                        -- a relative path
+                        vim.cmd("e " .. line_number .. vim.fn.expand('%:p:h') .. '/' .. link.url)
+                    end
+                end)
+
+                if not ok then
+                    vim.notify("Invalid link: " .. link.url, vim.log.levels.ERROR)
+                end
+            end
+
+            if anchor ~= "" then
+                vim.fn.search("^#* "..anchor:gsub("-", "[%- ]"))
+            end
+
         end
     elseif word then
         if word.text:match("^https?://") then
