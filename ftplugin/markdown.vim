@@ -738,7 +738,7 @@ augroup Mkd
     " workaround, even without options in viewoptions it still saves this
     " so it needs to be reset every time so that someone who has set their own
     " foldmethod(not manual) isn't stuck on it.
-    autocmd BufWinEnter <buffer> setlocal foldmethod=manual
+    autocmd BufWinEnter <buffer> setlocal foldmethod=expr
     autocmd BufUnload <buffer> call s:MarkdownClearSyntaxVariables()
     autocmd BufWritePost <buffer> call s:MarkdownRefreshSyntax(0)
     autocmd InsertEnter,InsertLeave <buffer> call s:MarkdownRefreshSyntax(0)
